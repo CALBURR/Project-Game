@@ -33,6 +33,10 @@ public class PlayerInputHandler : MonoBehaviour
         }
         if(Input.GetKeyDown(KeyCode.Space)){
             playerCreature.Jump();
+            
+        }
+        if(Input.GetKeyDown(KeyCode.P)){
+            playerCreature.Attack();
         }
         if(Input.GetKeyDown(KeyCode.E)){
             projectileThrower.Launch(Camera.main.ScreenToWorldPoint(Input.mousePosition));

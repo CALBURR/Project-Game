@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class Creature : MonoBehaviour
@@ -17,6 +18,9 @@ public class Creature : MonoBehaviour
     [SerializeField] float jumpRadius = 0.25f;
     [Header("Flavor")]
     [SerializeField] string creatureName = "Magno";
+    public GameObject body;
+    [SerializeField] private List<AnimationStateChanger> animationStateChangers;
+
     [Header("Tracked Data")]
     [SerializeField] Vector3 homePosition = Vector3.zero;
 
@@ -48,11 +52,27 @@ public class Creature : MonoBehaviour
         }else if(movementType == CreatureMovementType.physics){
             MoveCreatureRb(direction);
         }
+        if(direction.x != 0){
+            foreach(AnimationStateChanger asc in animationStateChangers){
+                asc.ChangeAnimationState("Walk",speed);
+            }
+        }else{
+            foreach(AnimationStateChanger asc in animationStateChangers){
+                asc.ChangeAnimationState("Idle");
+            }
+        }
+        
+
     }
 
     public void MoveCreatureRb(Vector3 direction){
         Vector3 currentVelocity = new Vector3(0, rb.velocity.y, 0);
         rb.velocity = (currentVelocity) + (direction * speed);
+        if(rb.velocity.x < 0){
+            body.transform.localScale = new Vector3(-1,1,1);
+        }else if(rb.velocity.x > 0){
+            body.transform.localScale = new Vector3(1,1,1);
+        }
         //rb.AddForce(direction * speed);
         //rb.MovePosition(transform.position + (direction * speed * Time.deltaTime));
     }
@@ -63,6 +83,17 @@ public class Creature : MonoBehaviour
     public void Jump(){
         if(Physics2D.OverlapCircleAll(transform.position + new Vector3(0,jumpOffset,0),jumpRadius, groundMask).Length > 0){
             rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+            foreach(AnimationStateChanger asc in animationStateChangers){
+                asc.ChangeAnimationState("Jump",speed);
+            
         }
+        }else{
+            foreach(AnimationStateChanger asc in animationStateChangers){
+                asc.ChangeAnimationState("Idle");
+            }
+        }
+    }
+    public void Attack(){
+        
     }
 }
