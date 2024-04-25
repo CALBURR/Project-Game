@@ -37,6 +37,7 @@ public class PlayerInputHandler : MonoBehaviour
         }
         if(Input.GetKeyDown(KeyCode.P)){
             playerCreature.Attack();
+            Debug.Log("You Punched");
         }
         if(Input.GetKeyDown(KeyCode.E)){
             projectileThrower.Launch(Camera.main.ScreenToWorldPoint(Input.mousePosition));

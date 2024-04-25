@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.Rendering;
 using UnityEngine;
 
@@ -46,13 +47,20 @@ public class Creature : MonoBehaviour
         //MoveCreature(new Vector3(-1,-1,0));
     }
 
-    public void MoveCreature(Vector3 direction){
-        if(movementType == CreatureMovementType.tf){
+    public void MoveCreature(Vector3 direction)
+    {
+
+        if (movementType == CreatureMovementType.tf)
+        {
             MoveCreatureTransform(direction);
-        }else if(movementType == CreatureMovementType.physics){
+        }
+        else if (movementType == CreatureMovementType.physics)
+        {
             MoveCreatureRb(direction);
         }
-        if(direction.x != 0){
+
+        //set animation
+        if(direction != Vector3.zero){
             foreach(AnimationStateChanger asc in animationStateChangers){
                 asc.ChangeAnimationState("Walk",speed);
             }
@@ -61,8 +69,6 @@ public class Creature : MonoBehaviour
                 asc.ChangeAnimationState("Idle");
             }
         }
-        
-
     }
 
     public void MoveCreatureRb(Vector3 direction){
@@ -79,21 +85,29 @@ public class Creature : MonoBehaviour
     public void MoveCreatureTransform(Vector3 direction){
         transform.position += direction * Time.deltaTime * speed;
     }
+    private bool onGround = false;
 
     public void Jump(){
         if(Physics2D.OverlapCircleAll(transform.position + new Vector3(0,jumpOffset,0),jumpRadius, groundMask).Length > 0){
             rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
-            foreach(AnimationStateChanger asc in animationStateChangers){
-                asc.ChangeAnimationState("Jump",speed);
             
         }
-        }else{
+        
+        if(onGround == true){
             foreach(AnimationStateChanger asc in animationStateChangers){
-                asc.ChangeAnimationState("Idle");
+                asc.ChangeAnimationState("Jump",speed);
             }
         }
     }
     public void Attack(){
-        
+        if(onGround && Input.GetKeyDown(KeyCode.P)){
+            foreach(AnimationStateChanger asc in animationStateChangers){
+                asc.ChangeAnimationState("Attack1");
+            }
+        }
+        // Play Attack animation
+        // Detect enemies within range
+        // Damage them
+        //
     }
 }
